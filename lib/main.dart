@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple
       ),
-      home: NoteDetail(), // get class from note_list.dart class.
+      home: NoteList(), // get class from note_list.dart class.
     );
   }
 }

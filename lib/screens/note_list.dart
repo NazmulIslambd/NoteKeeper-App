@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:note_keeper/screens/note_detail.dart';
 
 class NoteList extends StatefulWidget {
   @override
@@ -20,6 +21,9 @@ class _NoteListState extends State<NoteList> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           debugPrint("Tap floating Button");
+
+          // Here i declare navigator for screen route from build method : first step for navigator
+          navigatorToDetail("Add Note");//AppBarTitle step-4
         },
         tooltip: "Add Note",
         child: Icon(Icons.add),
@@ -52,13 +56,22 @@ class _NoteListState extends State<NoteList> {
               color: Colors.grey,
             ),
             onTap: () {
-              // declare onTap handaler for go to next Page
+              // declare onTap handler for go to next Page
               //  we declare functional code next time..
               debugPrint("Press on top for next page");
+              // Here i declare navigator for screen route from build method  : 02 step for navigator
+              navigatorToDetail("Edit Note");// AppBarTitle step-3
             },
           ),
         );
       },
     );
   }
+// Here i create method for navigator which is use for screen route
+void navigatorToDetail(String title){ //here i use string title for AppBarTitle step-1
+  Navigator.push(context, MaterialPageRoute(builder: (context){
+    return NoteDetail(title); //AppBarTitle step-2
+  }));
+}
+
 }
