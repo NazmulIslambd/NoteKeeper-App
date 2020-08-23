@@ -96,14 +96,14 @@ class _NoteDetailState extends State<NoteDetail> {
                 // Fourth Element, Here i create TextField step-04
 
                 Padding(
-                  padding: EdgeInsets.only(top: 15, bottom: 15),
+                  padding: EdgeInsets.only(top: 80, bottom: 10),
                   child: Row(
                     children: <Widget>[
                       Expanded(
                           child: RaisedButton(
                         color: Theme.of(context).primaryColorDark,
                         textColor: Theme.of(context).primaryColorLight,
-                        child: Text(
+                          child: Text(
                           "Save",
                           textScaleFactor: 1.5,
                         ),
@@ -113,21 +113,21 @@ class _NoteDetailState extends State<NoteDetail> {
                               debugPrint("Press from save button");
                             }
                           });
-
                         },
                       )),
-                      Container(width: 5.0,),
+                      Container(
+                        width: 5.0,
+                      ),
                       Expanded(
                           child: RaisedButton(
                         color: Theme.of(context).primaryColorDark,
                         textColor: Theme.of(context).primaryColorLight,
-                            child: Text(
+                        child: Text(
                           "Delete",
                           textScaleFactor: 1.5,
                         ),
                         onPressed: () {
                           setState(() {
-
                             debugPrint("Press from Delete button");
                           });
                         },
