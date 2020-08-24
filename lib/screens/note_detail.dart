@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
   // create constructor for AppBar title
   String appBarTitle; //AppBarTitle step-5
@@ -30,10 +31,13 @@ class _NoteDetailState extends State<NoteDetail> {
 
     return WillPopScope(
         //  willPopScope use for screen pop
-        onWillPop: () {
+       onWillPop:(){
           // write some code to control things,when user press Back navigation button in device
-          moveToLastScreen(); // implement method here
-        },
+         moveToLastScreen(); // implement method here
+
+         return null;
+
+       },
         child: Scaffold(
           appBar: AppBar(
             title: Text(appBarTitle),
@@ -44,6 +48,7 @@ class _NoteDetailState extends State<NoteDetail> {
                 onPressed: () {
                   // write some code to control things,when user press Back navigation button in device
                   moveToLastScreen(); // implement method here
+
                 }),
           ),
           body: Form(
