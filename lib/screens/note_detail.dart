@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//put all functional code required
+import 'dart:async';
+import 'package:sqflite/sqflite.dart';
+import 'package:note_keeper/models/note.dart';
+import 'package:note_keeper/utils/database_helper.dart';
 
 // ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
