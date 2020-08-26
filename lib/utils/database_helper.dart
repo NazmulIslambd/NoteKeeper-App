@@ -27,17 +27,16 @@ class DataBaseHelper {
   //second i create constructor of DataBaseHelper class - 02
   factory DataBaseHelper() {
     // here i define object
-    if (_dataBaseHelper != null) {
+    if (_dataBaseHelper == null) {
       _dataBaseHelper = DataBaseHelper
           ._createInstance(); //  This is executed only once,singleton object
     }
-
     return _dataBaseHelper;
   }
 
   //step -07 Create getter for database reference variable which is declare static Database _database; over there
   Future<Database> get database async {
-    if (_database != null) {
+    if (_database == null) {
       _database = await initializeDataBase();
     }
     return _database;
@@ -77,24 +76,28 @@ class DataBaseHelper {
     var result = await db.insert(noteTable, note.toMap());
     return result;
   }
+
   //step -10 Update Operation: Update a Note object and save from database
-Future<int>updateNote(Note note)async{
-  Database db =await this.database;
-  var result =await db.update(noteTable, note.toMap(),where: '$colId = ?',whereArgs: [note.id]);
-  return result;
-}
+  Future<int> updateNote(Note note) async {
+    Database db = await this.database;
+    var result = await db.update(noteTable, note.toMap(),
+        where: '$colId = ?', whereArgs: [note.id]);
+    return result;
+  }
+
 //step-11 Delete Operation: Delete a Note object from database
-Future<int>deleteNote(int id)async{
+  Future<int> deleteNote(int id) async {
     Database db = await this.database;
     var result = await db.rawDelete("DELETE FROM $noteTable Where $colId =$id");
     return result;
-}
+  }
+
 // step -12 Get number of Note object in database
-Future<int>getCount()async{
+  Future<int> getCount() async {
     Database db = await this.database;
-    List<Map<String,dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $noteTable');
+    List<Map<String, dynamic>> x =
+        await db.rawQuery('SELECT COUNT (*) from $noteTable');
     int result = Sqflite.firstIntValue(x);
     return result;
-}
-
+  }
 }
