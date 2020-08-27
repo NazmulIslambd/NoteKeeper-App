@@ -1,4 +1,5 @@
 // Required Packages
+import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io'; //deal with file and folders
@@ -50,7 +51,7 @@ class DataBaseHelper {
     String path = directory.path + 'note.db';
     //  Open/create the database at a given path -06
     var notesDataBase =
-    await openDatabase(path, version: 1, onCreate: _crateDb);
+        await openDatabase(path, version: 1, onCreate: _crateDb);
     return notesDataBase;
   }
 
@@ -59,7 +60,7 @@ class DataBaseHelper {
     //this statement help to create required column into DataBase
     await db.execute(
         'CRATE TABLE $noteTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,'
-            '$colTitle TEXT, $colDescription TEXT,$colPriority INTEGER,$colDate TEXT)');
+        '$colTitle TEXT, $colDescription TEXT,$colPriority INTEGER,$colDate TEXT)');
   }
 
   //step -08 Fetch Operation: get all Note object from database
@@ -96,18 +97,22 @@ class DataBaseHelper {
   Future<int> getCount() async {
     Database db = await this.database;
     List<Map<String, dynamic>> x =
-    await db.rawQuery('SELECT COUNT (*) from $noteTable');
+        await db.rawQuery('SELECT COUNT (*) from $noteTable');
     int result = Sqflite.firstIntValue(x);
     return result;
   }
-// Get the "Map List"[List<Map>] and convert it to "Note List"[List<Note>]
-Future<List<Note>> getNoteList() async {
-  var noteMapList = await getNoteMapList();
-  int count = noteMapList.length;
-  List<Note> noteList = List<Note>();
-  for(int i = 0;i<count; i++){
-    noteList.add(Note.fromMapObject(noteMapList[i]));
-  }
-}
 
+//step - 9 for functional code.
+// Get the "Map List"[List<Map>] and convert it to "Note List"[List<Note>]
+  Future<List<Note>> getNoteList() async {
+    var notMapList = await getNoteMapList(); //get 'map list ' from the database
+    int count =
+        notMapList.length; // count the number of map entries in db table
+    List<Note> noteList = List<Note>();
+
+    for (var i = 0; i < count; i++) {
+      noteList.add(Note.fromMapObject(notMapList[i]));
+    }
+    return noteList;
+  }
 }

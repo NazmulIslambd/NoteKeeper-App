@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 //put all functional code required
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
@@ -9,22 +11,29 @@ import 'package:note_keeper/utils/database_helper.dart';
 // ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
   // create constructor for AppBar title
-  String appBarTitle; //AppBarTitle step-5
-  NoteDetail(this.appBarTitle);
+  final String appBarTitle; //AppBarTitle step-5
+  //step - 14 for functional code.
+  final Note note;
+
+  NoteDetail(this.note, this.appBarTitle);
 
   @override //AppBarTitle step-6
-  _NoteDetailState createState() => _NoteDetailState(
-      this.appBarTitle); //this.appBarTitle here i use appBar title
+  _NoteDetailState createState() {
+    _NoteDetailState(this.note, this.appBarTitle);
+  } //this.appBarTitle here i use appBar title
 }
 
 class _NoteDetailState extends State<NoteDetail> {
   //this.appBarTitle here i use appBar title
   String appBarTitle; //AppBarTitle step-7
+  Note note;
 
-  _NoteDetailState(this.appBarTitle);
+  _NoteDetailState(this.note, this.appBarTitle);
 
   var _formKey = GlobalKey<FormState>();
   static var _priorities = ['High', 'Low']; //value declare for dropDown menu
+  // step-15 for functional code singleton instance of database helper
+  DataBaseHelper helper = DataBaseHelper();
 
   //controller declare for TextFiled for second step-02
   TextEditingController titleController = TextEditingController();
@@ -33,16 +42,18 @@ class _NoteDetailState extends State<NoteDetail> {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.headline6;
+    // step-16 for functional code show information
+    titleController.text = note.title;
+    descriptionController.text = note.description;
 
     return WillPopScope(
         //  willPopScope use for screen pop
-       onWillPop:(){
+        onWillPop: () {
           // write some code to control things,when user press Back navigation button in device
-         moveToLastScreen(); // implement method here
+          moveToLastScreen(); // implement method here
 
-         return null;
-
-       },
+          return null;
+        },
         child: Scaffold(
           appBar: AppBar(
             title: Text(appBarTitle),
@@ -53,7 +64,6 @@ class _NoteDetailState extends State<NoteDetail> {
                 onPressed: () {
                   // write some code to control things,when user press Back navigation button in device
                   moveToLastScreen(); // implement method here
-
                 }),
           ),
           body: Form(
@@ -71,11 +81,14 @@ class _NoteDetailState extends State<NoteDetail> {
                                 child: Text(dropDownStringItem));
                           }).toList(),
                           style: textStyle,
-                          value: 'Low', // default value is low
+                          value: getPriorityAsString(note.priority),
+                          // set step-17 from
 
                           onChanged: (valueSelectedByUser) {
                             setState(() {
                               debugPrint("User selected $valueSelectedByUser");
+                              updatePriorityAsInt(
+                                  valueSelectedByUser); //set step -18 from
                             });
                           }),
                     ),
@@ -95,6 +108,7 @@ class _NoteDetailState extends State<NoteDetail> {
                         onChanged: (value) {
                           // we put functional code next time
                           debugPrint('Something change in title text Field');
+                          updateTitle(); //from step-19
                         },
                         decoration: InputDecoration(
                             labelText: 'Title',
@@ -122,6 +136,7 @@ class _NoteDetailState extends State<NoteDetail> {
                           // we put functional code next time
                           debugPrint(
                               'Something change in Description text Field');
+                          updateDescription(); //from step-20
                         },
                         decoration: InputDecoration(
                             labelText: 'Description',
@@ -149,6 +164,8 @@ class _NoteDetailState extends State<NoteDetail> {
                               setState(() {
                                 if (_formKey.currentState.validate()) {
                                   debugPrint("Press from save button");
+                                  //step-24 for function
+                                  _save();//from step-21
                                 }
                               });
                             },
@@ -167,6 +184,7 @@ class _NoteDetailState extends State<NoteDetail> {
                             onPressed: () {
                               setState(() {
                                 debugPrint("Press from Delete button");
+                                _delete();//from step-25
                               });
                             },
                           )),
@@ -181,6 +199,100 @@ class _NoteDetailState extends State<NoteDetail> {
 
   //  create method for pop screen
   void moveToLastScreen() {
-    Navigator.pop(context);
+    // step-26 pass some value for update list view true go to note list where is Navigator.pop(context,true); for step-27
+    Navigator.pop(context,true);
+  }
+
+// step-17 for functional code.Convert the string priority in the form integer before saving to database
+  void updatePriorityAsInt(String value) {
+    switch (value) {
+      case 'High':
+        note.priority = 1;
+        break;
+      case 'Low':
+        note.priority = 2;
+        break;
+    }
+  }
+
+// step-18 for functional code.Convert int priority to String priority and display it to use in Dropdown
+  String getPriorityAsString(int value) {
+    String priority;
+    switch (value) {
+      case 1:
+        priority = _priorities[0]; //high
+        break;
+      case 2:
+        priority = _priorities[1]; //low
+        break;
+    }
+    return priority;
+  }
+
+// step-19 for functional code.for text field
+//update the title of the note object
+  void updateTitle() {
+    note.title = titleController.text;
+  }
+
+// step-20 for functional code.for text field
+//update the description of the note object
+  void updateDescription() {
+    note.description = descriptionController.text;
+  }
+
+// step-21 for functional code.for Save button
+  void _save() async {
+    //step-22 for function move last page
+    moveToLastScreen();
+
+//step-23 for function date
+    note.date = DateFormat.yMMMd().format(DateTime.now());
+    var result;
+    if (note.id != null) {
+      result = await helper.updateNote(
+          note); //come from step -09 insert operation :insert a Note object to database
+    } else {
+      result = await helper.insertNote(
+          note); // come from step -10 Update Operation: Update a Note object and save from database
+    }
+    if (result != 0) {
+      //success
+      _showAlertDialog('Status', 'Note saved Successful');
+    } else {
+      //Failure
+      _showAlertDialog('Status', "Problem Saving note");
+    }
+  }
+  //step -25 for delete button
+  void _delete()async{
+    moveToLastScreen();
+    //case 1: if user is trying to delete the new note i.e. he has come to
+    //the detail page by pressing The FAB to NOteList page.
+    if(note.id == null){
+      _showAlertDialog("Status", "No Note was deleted");
+      return;
+    }
+    //Case 2: USER is trying to delete the old note that already has valid Id.
+   int result = await helper.deleteNote(note.id);
+    if (result != 0) {
+      //success
+      _showAlertDialog('Status', 'Note Delete Successful');
+    } else {
+      //Failure
+      _showAlertDialog('Status', "Error Occurred while deleting note");
+    }
+
+  }
+
+
+
+//Create alert Dialog method for step-21
+  void _showAlertDialog(String title, String message) {
+    AlertDialog alertDialog = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    showDialog(context: context, builder: (_) => alertDialog);
   }
 }

@@ -24,6 +24,7 @@ class _NoteListState extends State<NoteList> {
     //step -2 for functional code
     if (noteList == null) {
       noteList = List<Note>();
+      updateListView();
     }
 
     return Scaffold(
@@ -38,7 +39,8 @@ class _NoteListState extends State<NoteList> {
           debugPrint("Tap floating Button");
 
           // Here i declare navigator for screen route from build method : first step for navigator
-          navigatorToDetail("Add Note"); //AppBarTitle step-4
+          navigatorToDetail(Note('',2,''),"Add Note"); //AppBarTitle step-4
+          //step-12 for functional code
         },
         tooltip: "Add Note",
         child: Icon(Icons.add),
@@ -70,9 +72,10 @@ class _NoteListState extends State<NoteList> {
             ),
             subtitle: Text(this.noteList[position].date),
             //date from database
-            //step -8 for functional code.
+            //step -8 for functional code. saw step -9 in database_helper.dart
             //if i use delete icon for onTap must be use gestureDetector widget
-            trailing: GestureDetector(//remember when ever use onTap even handler just warp GestureDetector widget
+            trailing: GestureDetector(
+                //remember when ever use onTap even handler just warp GestureDetector widget
                 child: Icon(
                   Icons.delete,
                   color: Colors.grey,
@@ -86,7 +89,8 @@ class _NoteListState extends State<NoteList> {
               //  we declare functional code next time..
               debugPrint("Press on top for next page");
               // Here i declare navigator for screen route from build method  : 02 step for navigator
-              navigatorToDetail("Edit Note"); // AppBarTitle step-3
+              navigatorToDetail(this.noteList[position],"Edit Note"); // AppBarTitle step-3
+              // step-13 for functional code go to note detail.dart for step-14
             },
           ),
         );
@@ -95,11 +99,15 @@ class _NoteListState extends State<NoteList> {
   }
 
 // Here i create method for navigator which is use for screen route
-  void navigatorToDetail(String title) {
+  //step-27 use database use also if condition
+  void navigatorToDetail(Note note, title) async{ //step-11 for functional code use Note for add new list
     //here i use string title for AppBarTitle step-1
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return NoteDetail(title); //AppBarTitle step-2
+    bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return NoteDetail(note,title); //AppBarTitle step-2
     }));
+    if(result == true){
+      updateListView();
+    }
   }
 
 //step -3 for functional code.create method for priority color
@@ -135,7 +143,7 @@ class _NoteListState extends State<NoteList> {
     int result = await dataBaseHelper.deleteNote(note.id);
     if (result != 0) {
       _showSnackBar(context, 'Note Deleted Successfully');
-      // TODO update the list view
+      updateListView();//from step -10
     }
   }
 
@@ -143,5 +151,19 @@ class _NoteListState extends State<NoteList> {
   void _showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  //step -10 for functional code.create method for
+  void updateListView() {
+    final Future<Database> dbFuture = dataBaseHelper
+        .initializeDataBase(); //i will get the singleton instance of our database once you get the database then execute 'then 'Function
+    dbFuture.then((database) {
+      Future<List<Note>> noteListFuture = dataBaseHelper
+          .getNoteList(); //get the method from database helper class step -9 getNoteList
+      setState(() {//use setState function for update UI
+        this.noteList = noteList;
+        this.count = noteList.length;
+      });
+    });
   }
 }
