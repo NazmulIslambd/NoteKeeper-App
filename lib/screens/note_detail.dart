@@ -18,17 +18,17 @@ class NoteDetail extends StatefulWidget {
   NoteDetail(this.note, this.appBarTitle);
 
   @override //AppBarTitle step-6
-  _NoteDetailState createState() {
-    _NoteDetailState(this.note, this.appBarTitle);
+  State<StatefulWidget> createState() {
+   return NoteDetailState(this.note, this.appBarTitle);
   } //this.appBarTitle here i use appBar title
 }
 
-class _NoteDetailState extends State<NoteDetail> {
+class NoteDetailState extends State<NoteDetail> {
   //this.appBarTitle here i use appBar title
   String appBarTitle; //AppBarTitle step-7
   Note note;
 
-  _NoteDetailState(this.note, this.appBarTitle);
+  NoteDetailState(this.note, this.appBarTitle);
 
   var _formKey = GlobalKey<FormState>();
   static var _priorities = ['High', 'Low']; //value declare for dropDown menu
@@ -162,6 +162,7 @@ class _NoteDetailState extends State<NoteDetail> {
                             ),
                             onPressed: () {
                               setState(() {
+
                                 if (_formKey.currentState.validate()) {
                                   debugPrint("Press from save button");
                                   //step-24 for function
@@ -169,7 +170,8 @@ class _NoteDetailState extends State<NoteDetail> {
                                 }
                               });
                             },
-                          )),
+                          ),
+                          ),
                           Container(
                             width: 5.0,
                           ),
@@ -252,7 +254,8 @@ class _NoteDetailState extends State<NoteDetail> {
     if (note.id != null) {
       result = await helper.updateNote(
           note); //come from step -09 insert operation :insert a Note object to database
-    } else {
+    }
+    else {
       result = await helper.insertNote(
           note); // come from step -10 Update Operation: Update a Note object and save from database
     }

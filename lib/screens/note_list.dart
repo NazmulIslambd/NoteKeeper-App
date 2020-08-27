@@ -10,10 +10,12 @@ import 'package:note_keeper/utils/database_helper.dart';
 class NoteList extends StatefulWidget {
   int count = 0; //show how many list create
   @override
-  _NoteListState createState() => _NoteListState();
+  State<StatefulWidget> createState() {
+    return NoteListState();
+  }
 }
 
-class _NoteListState extends State<NoteList> {
+class NoteListState extends State<NoteList> {
   //step -1 for functional code create object of database_helper class
   DataBaseHelper dataBaseHelper = DataBaseHelper();
   List<Note> noteList;
@@ -36,8 +38,6 @@ class _NoteListState extends State<NoteList> {
       // implement floating action button step -2
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          debugPrint("Tap floating Button");
-
           // Here i declare navigator for screen route from build method : first step for navigator
           navigatorToDetail(Note('',2,''),"Add Note"); //AppBarTitle step-4
           //step-12 for functional code
@@ -86,8 +86,6 @@ class _NoteListState extends State<NoteList> {
                 ),
             onTap: () {
               // declare onTap handler for go to next Page
-              //  we declare functional code next time..
-              debugPrint("Press on top for next page");
               // Here i declare navigator for screen route from build method  : 02 step for navigator
               navigatorToDetail(this.noteList[position],"Edit Note"); // AppBarTitle step-3
               // step-13 for functional code go to note detail.dart for step-14
@@ -100,7 +98,7 @@ class _NoteListState extends State<NoteList> {
 
 // Here i create method for navigator which is use for screen route
   //step-27 use database use also if condition
-  void navigatorToDetail(Note note, title) async{ //step-11 for functional code use Note for add new list
+  void navigatorToDetail(Note note,String title) async{ //step-11 for functional code use Note for add new list
     //here i use string title for AppBarTitle step-1
     bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return NoteDetail(note,title); //AppBarTitle step-2
@@ -160,9 +158,11 @@ class _NoteListState extends State<NoteList> {
     dbFuture.then((database) {
       Future<List<Note>> noteListFuture = dataBaseHelper
           .getNoteList(); //get the method from database helper class step -9 getNoteList
+      noteListFuture.then((noteList){
       setState(() {//use setState function for update UI
         this.noteList = noteList;
         this.count = noteList.length;
+      });
       });
     });
   }

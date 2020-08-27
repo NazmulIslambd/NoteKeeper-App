@@ -80,7 +80,7 @@ class DataBaseHelper {
 
   //step -10 Update Operation: Update a Note object and save from database
   Future<int> updateNote(Note note) async {
-    Database db = await this.database;
+    var db = await this.database;
     var result = await db.update(noteTable, note.toMap(),
         where: '$colId = ?', whereArgs: [note.id]);
     return result;
