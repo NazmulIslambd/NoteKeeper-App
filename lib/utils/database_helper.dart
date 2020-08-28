@@ -1,5 +1,5 @@
 // Required Packages
-import 'package:flutter/services.dart';
+
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io'; //deal with file and folders
@@ -9,7 +9,7 @@ import 'package:note_keeper/models/note.dart';
 // first step create Database helper class with singleton object
 class DataBaseHelper {
   // first i create singleton object-01
-  static DataBaseHelper _dataBaseHelper; //singleton DataBaseHelper
+  static DataBaseHelper _databaseHelper; //singleton DataBaseHelper
   static Database _database; //singleton DataBase
 
   // here i define DataBase table instance
@@ -28,11 +28,11 @@ class DataBaseHelper {
   //second i create constructor of DataBaseHelper class - 02
   factory DataBaseHelper() {
     // here i define object
-    if (_dataBaseHelper == null) {
-      _dataBaseHelper = DataBaseHelper
+    if (_databaseHelper == null) {
+      _databaseHelper = DataBaseHelper
           ._createInstance(); //  This is executed only once,singleton object
     }
-    return _dataBaseHelper;
+    return _databaseHelper;
   }
 
   //step -07 Create getter for database reference variable which is declare static Database _database; over there
@@ -59,7 +59,7 @@ class DataBaseHelper {
   void _crateDb(Database db, int newVersion) async {
     //this statement help to create required column into DataBase
     await db.execute(
-        'CRATE TABLE $noteTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,'
+        'CREATE TABLE $noteTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,'
         '$colTitle TEXT, $colDescription TEXT,$colPriority INTEGER,$colDate TEXT)');
   }
 
